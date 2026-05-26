@@ -1,95 +1,99 @@
-# Práctica UD9.AA4: NAT i VPN
+# Pràctica UD9.AA4: NAT i VPN
 
-## 1. Configuraciones Iniciales y Preparación del Servidor
-El objetivo de esta fase es preparar nuestra máquina de la red interna (Zorin OS) para que actúe como servidor web y servidor SSH.
+## 1. Configuracions Inicials i Preparació del Servidor
+L'objectiu d'aquesta fase és preparar la nostra màquina de la xarxa interna (Zorin OS) perquè actuï com a servidor web i servidor SSH.
 
-Primero, instalamos y verificamos los servicios en el servidor Zorin (IP 192.169.11.11):
+Primer, instal·lem i verifiquem els serveis al servidor Zorin (IP 192.169.11.11):
 
     sudo apt install apache2 openssh-server
     sudo systemctl restart apache2
 
-A continuación, editamos el archivo index.html por defecto de Apache para que muestre un mensaje distintivo (en este caso, "Servidor de Rui"):
+A continuació, editem l'arxiu index.html per defecte d'Apache perquè mostri un missatge distintiu (en aquest cas, "Servidor de Rui"):
 
     sudo nano /var/www/html/index.html
 
-![Edición del index.html](pics/Captura%20de%20pantalla%202026-05-21%20191643.png)
-![Código del index.html](pics/Captura%20de%20pantalla%202026-05-21%20192308.png)
+![Edició de l'index.html](pics/Captura%20de%20pantalla%202026-05-21%20191643.png)
+![Codi de l'index.html](pics/Captura%20de%20pantalla%202026-05-21%20192308.png)
 
-Comprobamos localmente que el servidor web funciona accediendo a localhost desde el propio Zorin:
-![Comprobación en localhost](pics/Captura%20de%20pantalla%202026-05-21%20192343.png)
+Comprovem localment que el servidor web funciona accedint a localhost des del propi Zorin:
+![Comprovació en localhost](pics/Captura%20de%20pantalla%202026-05-21%20192343.png)
 
-## 2. Configuración de Destination NAT (DNAT)
-En esta fase configuraremos el cortafuegos IPFire para permitir el acceso remoto desde el exterior (xarxa NAT) a los servicios internos de Zorin mediante Port Forwarding.
+## 2. Configuració de Destination NAT (DNAT)
+En aquesta fase configurarem el tallafocs IPFire per permetre l'accés remot des de l'exterior (xarxa NAT) als serveis interns de Zorin mitjançant Port Forwarding.
 
-Accedemos a la interfaz web de IPFire y vamos a Firewall > Reglas del Cortafuegos. Creamos dos reglas:
-1. Regla HTTP: Origen RED -> NAT destino (DNAT) -> Destino 192.169.11.11 -> Protocolo Preestablecido HTTP (Puerto 80).
-2. Regla SSH: Origen RED -> NAT destino (DNAT) -> Destino 192.169.11.11 -> Protocolo Preestablecido SSH (Puerto 22).
+Accedim a la interfície web d'IPFire i anem a Firewall > Reglas del Cortafuegos. Creem dues regles:
+1. Regla HTTP: Origen RED -> NAT destí (DNAT) -> Destí 192.169.11.11 -> Protocol Preestablert HTTP (Port 80).
+2. Regla SSH: Origen RED -> NAT destí (DNAT) -> Destí 192.169.11.11 -> Protocol Preestablert SSH (Port 22).
 
-Aplicamos los cambios y verificamos que ambas reglas están activas:
-![Reglas DNAT en IPFire](pics/Captura%20de%20pantalla%202026-05-21%20194018.png)
+Apliquem els canvis i verifiquem que ambdues regles estan actives:
+![Regles DNAT a IPFire](pics/Captura%20de%20pantalla%202026-05-21%20194018.png)
 
-### Comprobaciones del DNAT desde el Cliente (Exterior)
-Para demostrar que el enrutamiento funciona, nos vamos a la máquina Cliente situada en la red externa y atacamos a la IP pública del IPFire (10.0.2.17).
+### Comprovacions del DNAT des del Client (Exterior)
+Per demostrar que l'enrutament funciona, ens n'anem a la màquina Client situada a la xarxa externa i ataquem a la IP pública de l'IPFire (10.0.2.17).
 
-Prueba Web:
-Accedemos a http://10.0.2.17 desde el navegador del Cliente y verificamos que nos carga la página interna:
-![Prueba Web DNAT](pics/Captura%20de%20pantalla%202026-05-21%20194740.png)
+Prova Web:
+Accedim a http://10.0.2.17 des del navegador del Client i verifiquem que ens carrega la pàgina interna:
+![Prova Web DNAT](pics/Captura%20de%20pantalla%202026-05-21%20194740.png)
 
-Prueba SSH:
-Desde la terminal del Cliente, iniciamos conexión contra la IP pública del firewall:
+Prova SSH:
+Des de la terminal del Client, iniciem connexió contra la IP pública del firewall:
 
     ssh rui@10.0.2.17
 
-Verificamos que logramos entrar al servidor interno y confirmamos con un ip a que, efectivamente, estamos dentro de la máquina 192.169.11.11:
-![Prueba SSH DNAT 1](pics/Captura%20de%20pantalla%202026-05-21%20194946.png)
-![Prueba SSH DNAT 2](pics/Captura%20de%20pantalla%202026-05-21%20195101.png)
+Verifiquem que aconseguim entrar al servidor intern i confirmem amb un ip a que, efectivament, estem dins de la màquina 192.169.11.11:
+![Prova SSH DNAT 1](pics/Captura%20de%20pantalla%202026-05-21%20194946.png)
+![Prova SSH DNAT 2](pics/Captura%20de%20pantalla%202026-05-21%20195101.png)
 
-## 3. Configuración del Servidor VPN (OpenVPN)
-Para un acceso más seguro y profesional, configuraremos una VPN para que el cliente externo obtenga una IP virtual y trabaje como si estuviera dentro de la LAN.
+## 3. Configuració del Servidor VPN (OpenVPN)
+Per a un accés més segur i professional, configurarem una VPN perquè el client extern obtingui una IP virtual i treballi com si estigués dins de la LAN.
 
-### 3.1 Generación de Certificados
-En IPFire, vamos a Servicios > OpenVPN y generamos los certificados Root/Host especificando nuestro dominio:
-* Nombre de organización: ipfire
-* Nombre de host: ipfire.foodlogistic.test
+### 3.1 Generació de Certificats
+A IPFire, anem a Servicios > OpenVPN i generem els certificats Root/Host especificant el nostre domini:
+* Nom d'organització: ipfire
+* Nom de host: ipfire.foodlogistic.test
 
-![Formulario Certificados](pics/Captura%20de%20pantalla%202026-05-21%20200126.png)
+![Formulari Certificats](pics/Captura%20de%20pantalla%202026-05-21%20200126.png)
 
-Confirmamos que los certificados se han creado correctamente en la tabla de Autoridades Certificadoras:
-![Certificados Generados](pics/Captura%20de%20pantalla%202026-05-21%20201210.png)
+Confirmem que els certificats s'han creat correctament a la taula d'Autoritats Certificadores:
+![Certificats Generats](pics/Captura%20de%20pantalla%202026-05-21%20201210.png)
 
-### 3.2 Configuración Global y Arranque
-En la sección de Configuraciones Globales:
-1. Marcamos OpenVPN en RED.
-2. Definimos la subred de OpenVPN (distinta a la GREEN): 10.25.213.0/255.255.255.0.
-3. Guardamos e iniciamos el servidor.
+### 3.2 Configuració Global i Arrancada
+A la secció de Configuracions Globals:
+1. Marquem OpenVPN en RED.
+2. Definim la subxarxa d'OpenVPN (diferent de la GREEN): 10.25.213.0/255.255.255.0.
+3. Guardem i iniciem el servidor.
 
-### 3.3 Creación de la Conexión Cliente (Roadwarrior)
-Añadimos una nueva conexión del tipo Host-to-Net (Roadwarrior) para nuestro cliente externo:
-* Nombre: vpnrui
-* Generamos un certificado nuevo introduciendo una contraseña PKCS12 segura.
-* Guardamos la configuración.
+### 3.3 Creació de la Connexió Client (Roadwarrior)
+Afegim una nova connexió del tipus Host-to-Net (Roadwarrior) per al nostre client extern:
+* Nom: vpnrui
+* Generem un certificat nou introduint una contrasenya PKCS12 segura.
+* Guardem la configuració.
 
-![Configuración del usuario VPN](pics/Captura%20de%20pantalla%202026-05-26%20184932.png)
+![Configuració de l'usuari VPN](pics/Captura%20de%20pantalla%202026-05-26%20184932.png)
 
-Comprobamos que el usuario se ha creado correctamente y descargamos el paquete de configuración (.zip) usando el icono del disquete en la columna Acción:
-![Usuario vpnrui creado](pics/Captura%20de%20pantalla%202026-05-26%20185159.png)
+Comprovem que l'usuari s'ha creat correctament i descarreguem el paquet de configuració (.zip) utilitzant la icona del disquet a la columna Acción:
+![Usuari vpnrui creat](pics/Captura%20de%20pantalla%202026-05-26%20185159.png)
 
-## 4. Configuración del Cliente VPN y Prueba Final
-Trasladamos el archivo .zip descargado a nuestra máquina Cliente externa.
+## 4. Configuració del Client VPN i Prova Final
+Traslladem l'arxiu .zip descarregat a la nostra màquina Client externa.
 
-### 4.1 Resolución DNS Local
-Antes de conectar, es necesario que la máquina cliente sepa resolver el dominio del servidor VPN. Editamos el archivo hosts del cliente (Linux):
+### 4.1 Resolució DNS Local
+Abans de connectar, és necessari que la màquina client sàpiga resoldre el domini del servidor VPN. Editem l'arxiu hosts del client (Linux):
 
     sudo nano /etc/hosts
 
-Añadimos la línea apuntando a la IP pública del IPFire:
+Afegim la línia apuntant a la IP pública de l'IPFire:
 10.0.2.17 ipfire.foodlogistic.test
 
-![Edición archivo hosts](pics/Captura%20de%20pantalla%202026-05-21%20191034.png)
+![Edició arxiu hosts](pics/Captura%20de%20pantalla%202026-05-21%20191034.png)
 
-### 4.2 Conexión y Comprobación Final
-Instalamos el cliente OpenVPN y ejecutamos el archivo de configuración extraído del .zip (introduciendo la contraseña PKCS12 cuando se nos solicite).
+### 4.2 Connexió i Comprovació Final
+Instal·lem el client OpenVPN i executem l'arxiu de configuració extret del .zip (introduint la contrasenya PKCS12 quan se'ns sol·liciti).
 
-Una vez establecida la conexión VPN, nuestro equipo cliente ya forma parte de la red virtual. Para demostrarlo, abrimos el navegador y accedemos directamente a la IP privada del Zorin (192.169.11.11), logrando cargar la web correctamente sin necesidad de usar la IP pública ni reglas DNAT:
+Una vegada establerta la connexió VPN, el nostre equip client ja forma part de la xarxa virtual. Per demostrar-ho, obrim el navegador i accedim directament a la IP privada del Zorin (192.169.11.11), aconseguint carregar la web correctament sense necessitat d'utilitzar la IP pública ni regles DNAT:
 
-![Acceso VPN a red interna](pics/Captura%20de%20pantalla%202026-05-26%20190823.png)
+![Accés VPN a xarxa interna](pics/Captura%20de%20pantalla%202026-05-26%20190823.png)
+
+---
+
+[Tornar enrere](README.md)
