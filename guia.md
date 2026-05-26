@@ -12,11 +12,11 @@ A continuación, editamos el archivo index.html por defecto de Apache para que m
 
     sudo nano /var/www/html/index.html
 
-![Edición del index.html](pics/Captura de pantalla 2026-05-21 191643.png)
-![Código del index.html](pics/Captura de pantalla 2026-05-21 192308.png)
+![Edición del index.html](pics/Captura%20de%20pantalla%202026-05-21%20191643.png)
+![Código del index.html](pics/Captura%20de%20pantalla%202026-05-21%20192308.png)
 
 Comprobamos localmente que el servidor web funciona accediendo a localhost desde el propio Zorin:
-![Comprobación en localhost](pics/Captura de pantalla 2026-05-21 192343.png)
+![Comprobación en localhost](pics/Captura%20de%20pantalla%202026-05-21%20192343.png)
 
 ## 2. Configuración de Destination NAT (DNAT)
 En esta fase configuraremos el cortafuegos IPFire para permitir el acceso remoto desde el exterior (xarxa NAT) a los servicios internos de Zorin mediante Port Forwarding.
@@ -26,14 +26,14 @@ Accedemos a la interfaz web de IPFire y vamos a Firewall > Reglas del Cortafuego
 2. Regla SSH: Origen RED -> NAT destino (DNAT) -> Destino 192.169.11.11 -> Protocolo Preestablecido SSH (Puerto 22).
 
 Aplicamos los cambios y verificamos que ambas reglas están activas:
-![Reglas DNAT en IPFire](pics/Captura de pantalla 2026-05-21 194018.png)
+![Reglas DNAT en IPFire](pics/Captura%20de%20pantalla%202026-05-21%20194018.png)
 
 ### Comprobaciones del DNAT desde el Cliente (Exterior)
 Para demostrar que el enrutamiento funciona, nos vamos a la máquina Cliente situada en la red externa y atacamos a la IP pública del IPFire (10.0.2.17).
 
 Prueba Web:
 Accedemos a http://10.0.2.17 desde el navegador del Cliente y verificamos que nos carga la página interna:
-![Prueba Web DNAT](pics/Captura de pantalla 2026-05-21 194740.png)
+![Prueba Web DNAT](pics/Captura%20de%20pantalla%202026-05-21%20194740.png)
 
 Prueba SSH:
 Desde la terminal del Cliente, iniciamos conexión contra la IP pública del firewall:
@@ -41,8 +41,8 @@ Desde la terminal del Cliente, iniciamos conexión contra la IP pública del fir
     ssh rui@10.0.2.17
 
 Verificamos que logramos entrar al servidor interno y confirmamos con un ip a que, efectivamente, estamos dentro de la máquina 192.169.11.11:
-![Prueba SSH DNAT 1](pics/Captura de pantalla 2026-05-21 194946.png)
-![Prueba SSH DNAT 2](pics/Captura de pantalla 2026-05-21 195101.png)
+![Prueba SSH DNAT 1](pics/Captura%20de%20pantalla%202026-05-21%20194946.png)
+![Prueba SSH DNAT 2](pics/Captura%20de%20pantalla%202026-05-21%20195101.png)
 
 ## 3. Configuración del Servidor VPN (OpenVPN)
 Para un acceso más seguro y profesional, configuraremos una VPN para que el cliente externo obtenga una IP virtual y trabaje como si estuviera dentro de la LAN.
@@ -52,10 +52,10 @@ En IPFire, vamos a Servicios > OpenVPN y generamos los certificados Root/Host es
 * Nombre de organización: ipfire
 * Nombre de host: ipfire.foodlogistic.test
 
-![Formulario Certificados](pics/Captura de pantalla 2026-05-21 200126.png)
+![Formulario Certificados](pics/Captura%20de%20pantalla%202026-05-21%20200126.png)
 
 Confirmamos que los certificados se han creado correctamente en la tabla de Autoridades Certificadoras:
-![Certificados Generados](pics/Captura de pantalla 2026-05-21 201210.png)
+![Certificados Generados](pics/Captura%20de%20pantalla%202026-05-21%20201210.png)
 
 ### 3.2 Configuración Global y Arranque
 En la sección de Configuraciones Globales:
@@ -69,10 +69,10 @@ Añadimos una nueva conexión del tipo Host-to-Net (Roadwarrior) para nuestro cl
 * Generamos un certificado nuevo introduciendo una contraseña PKCS12 segura.
 * Guardamos la configuración.
 
-![Configuración del usuario VPN](pics/Captura de pantalla 2026-05-26 184932.png)
+![Configuración del usuario VPN](pics/Captura%20de%20pantalla%202026-05-26%20184932.png)
 
 Comprobamos que el usuario se ha creado correctamente y descargamos el paquete de configuración (.zip) usando el icono del disquete en la columna Acción:
-![Usuario vpnrui creado](pics/Captura de pantalla 2026-05-26 185159.png)
+![Usuario vpnrui creado](pics/Captura%20de%20pantalla%202026-05-26%20185159.png)
 
 ## 4. Configuración del Cliente VPN y Prueba Final
 Trasladamos el archivo .zip descargado a nuestra máquina Cliente externa.
@@ -85,11 +85,11 @@ Antes de conectar, es necesario que la máquina cliente sepa resolver el dominio
 Añadimos la línea apuntando a la IP pública del IPFire:
 10.0.2.17 ipfire.foodlogistic.test
 
-![Edición archivo hosts](pics/Captura de pantalla 2026-05-21 191034.png)
+![Edición archivo hosts](pics/Captura%20de%20pantalla%202026-05-21%20191034.png)
 
 ### 4.2 Conexión y Comprobación Final
 Instalamos el cliente OpenVPN y ejecutamos el archivo de configuración extraído del .zip (introduciendo la contraseña PKCS12 cuando se nos solicite).
 
 Una vez establecida la conexión VPN, nuestro equipo cliente ya forma parte de la red virtual. Para demostrarlo, abrimos el navegador y accedemos directamente a la IP privada del Zorin (192.169.11.11), logrando cargar la web correctamente sin necesidad de usar la IP pública ni reglas DNAT:
 
-![Acceso VPN a red interna](pics/Captura de pantalla 2026-05-26 190823.png)
+![Acceso VPN a red interna](pics/Captura%20de%20pantalla%202026-05-26%20190823.png)
