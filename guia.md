@@ -86,14 +86,16 @@ Abans de connectar, és necessari que la màquina client sàpiga resoldre el dom
 Afegim la línia apuntant a la IP pública de l'IPFire:
 10.0.2.17 ipfire.foodlogistic.test
 
-![Edició arxiu hosts](pics/Captura%20de%20pantalla%202026-05-21%20191034.png)
+<img width="659" height="483" alt="image" src="https://github.com/user-attachments/assets/b5826d9e-11e3-490b-998e-bc70909e2cf2" />
+
 
 ### 4.2 Connexió i Comprovació Final
 Instal·lem el client OpenVPN i executem l'arxiu de configuració extret del .zip (introduint la contrasenya PKCS12 quan se'ns sol·liciti).
 
 Una vegada establerta la connexió VPN, el nostre equip client ja forma part de la xarxa virtual. Per demostrar-ho, obrim el navegador i accedim directament a la IP privada del Zorin (192.169.11.11), aconseguint carregar la web correctament sense necessitat d'utilitzar la IP pública ni regles DNAT:
 
-<img width="659" height="483" alt="image" src="https://github.com/user-attachments/assets/49796e0d-8f04-45a0-8c02-1c055cabdd49" />
+<img width="1266" height="796" alt="image" src="https://github.com/user-attachments/assets/c2aadfb2-1484-4f67-9b07-7c69bdb69e0e" />
+
 
 
 ---
