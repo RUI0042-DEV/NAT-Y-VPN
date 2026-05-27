@@ -93,7 +93,8 @@ Instal·lem el client OpenVPN i executem l'arxiu de configuració extret del .zi
 
 Una vegada establerta la connexió VPN, el nostre equip client ja forma part de la xarxa virtual. Per demostrar-ho, obrim el navegador i accedim directament a la IP privada del Zorin (192.169.11.11), aconseguint carregar la web correctament sense necessitat d'utilitzar la IP pública ni regles DNAT:
 
-![Accés VPN a xarxa interna](pics/Captura%20de%20pantalla%202026-05-26%20190823.png)
+<img width="659" height="483" alt="image" src="https://github.com/user-attachments/assets/49796e0d-8f04-45a0-8c02-1c055cabdd49" />
+
 
 ---
 
