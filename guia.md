@@ -72,6 +72,7 @@ Afegim una nova connexió del tipus Host-to-Net (Roadwarrior) per al nostre clie
 ![Configuració de l'usuari VPN](pics/Captura%20de%20pantalla%202026-05-26%20184932.png)
 
 Comprovem que l'usuari s'ha creat correctament i descarreguem el paquet de configuració (.zip) utilitzant la icona del disquet a la columna Acción:
+
 ![Usuari vpnrui creat](pics/Captura%20de%20pantalla%202026-05-26%20185159.png)
 
 ## 4. Configuració del Client VPN i Prova Final
